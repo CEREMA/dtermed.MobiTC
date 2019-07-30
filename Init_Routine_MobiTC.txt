@@ -1,0 +1,22 @@
+#Chemin du repertoire de travail
+C:\WACA\Petite_Cote
+#Nom du projet
+WACA
+#Nom du fichier enveloppe
+
+#Nom du fichier squelette
+
+#Nom du fichier trace
+
+#Nom du fichier des intersections
+
+#Producteur des graphiques
+
+#Intervalles de confiance
+
+#Date de début des graphiques
+
+#Date de fin des graphiques
+
+#Date de prospective
+
