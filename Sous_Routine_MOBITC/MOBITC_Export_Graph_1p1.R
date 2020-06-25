@@ -13,9 +13,9 @@
 # fichier_intersection="20190517T152421-TPM-Sque-cont-Tra-P50-L0100sel-lisse-filtre3-mod-IntersTDC-v1.txt"
 # fichier_sque="20190517T152421-TPM-Sque-cont"
 # fichier_trace="20190517T152421-TPM-Sque-cont-Tra-P50-L0100sel-lisse-filtre3-mod"
-# fichier_evolution="20190517T152421-TPM-Sque-cont-Tra-P50-L0100sel-lisse-filtre3-mod-IntersTDC-v1-toutesdates-MobiTC.txt"
+# fichier_evolution="Sque_TPM_2154-Tra-P50-L0050b-IntersTDC-v1-toutesdates-MobiTC.txt"
 
-MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fichier_trace,fichier_intersection,fichier_evolution,iaxe,itr)
+MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fichier_trace,fichier_intersection,fichier_evolution,NAxe,NTrace)
 {
   if(!require(rgdal)){install.packages("rgdal")}
   library(rgdal)
@@ -31,6 +31,8 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
   library(grid)
   if(!require(leaflet)){install.packages("leaflet")}
   library(leaflet)
+  if(!require(png)){install.packages("png")}
+  library(png)
   
   #si probl?me avec google mettre 0
   plan=1
@@ -75,7 +77,6 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
   dateprosp=lignes[22]
   close(fid)
   
-  
   #convertion IC
   IC=as.numeric(substr(ICtx,3,4))
   
@@ -93,21 +94,6 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
   Sque = readOGR(dsnlayer,fichier_sque)
   Squedeg=spTransform(Sque,CRS("+init=epsg:4326"))
   
-  #boucle sur les axes
-  # for (iaxe in 1 : length(unique(tab$NAxe)))
-  # {
-  itemp=which(tab$NAxe ==unique(tab$NAxe)[iaxe])
-  #calcul du nombre de trace
-  NbTrace=length(unique(tab$NTrace[itemp]))
-  print(NbTrace)
-  
-  #boucle sur les traces
-  # for (itr in 1:NbTrace)
-  # {
-  #extrait des valeurs des intersections des tdc
-  NAxe=unique(tab$NAxe)[iaxe]
-  NTrace=unique(tab$NTrace[itemp])[itr]
-  
   #ouverture du fichier nécessaire aux courbes (tabres)
   nomdirgraph=paste(chemin_rep_travail,"\\Graph",sep="")
   nom_courbe=paste(substr(fichier_evolution,1,nchar(fichier_evolution)-4),"-Courbe-NAxe",NAxe,"-NTrace",NTrace,".txt",sep="")
@@ -118,15 +104,35 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
   }
   
   #extrait de ligneres0
-  ligneresaxe=ligneres0[which(ligneres0$NAxe ==unique(tab$NAxe)[iaxe]),]
-  ligneres=ligneresaxe[which(ligneresaxe$NTrace ==unique(tab$NTrace)[itr]),]
+  ligneresaxe=ligneres0[which(ligneres0$NAxe ==NAxe),]
+  ligneres=ligneresaxe[which(ligneresaxe$NTrace ==NTrace),]
   
   #axe et trace précédente
   #ordonner la table ligneres0
   ligneresord=ligneres0[order(ligneres0$NAxe,ligneres0$NTrace),]
-  ligneresprec=ligneres0[which(ligneresord$NAxe==ligneres$NAxe & ligneresord$NTrace==ligneres$NTrace)-1,]
-  ligneressuiv=ligneres0[which(ligneresord$NAxe==ligneres$NAxe & ligneresord$NTrace==ligneres$NTrace)+1,]
-  
+  ligneresprec=ligneres0[which(ligneresord$NAxe==ligneres$NAxe & ligneresord$NTrace==ligneres$NTrace),]
+  ligneressuiv=ligneres0[which(ligneresord$NAxe==ligneres$NAxe & ligneresord$NTrace==ligneres$NTrace),]
+  # ligneresprec=ligneres0[which(ligneresord$NAxe==ligneres$NAxe & ligneresord$NTrace==ligneres$NTrace)-1,]
+  # if(nrow(ligneresprec)>0)
+  # {
+  # k=2
+  # while(is.na(ligneresprec$WLS))
+  # {
+  #   ligneresprec=ligneres0[which(ligneresord$NAxe==ligneres$NAxe & ligneresord$NTrace==ligneres$NTrace)-k,]
+  #   k=k+1
+  # }
+  # }
+  # 
+  # ligneressuiv=ligneres0[which(ligneresord$NAxe==ligneres$NAxe & ligneresord$NTrace==ligneres$NTrace)+1,]
+  # if(nrow(ligneressuiv)>0)
+  # {
+  # k=2
+  # while(is.na(ligneressuiv$WLS))
+  # {
+  #   ligneressuiv=ligneres0[which(ligneresord$NAxe==ligneres$NAxe & ligneresord$NTrace==ligneres$NTrace)+k,]
+  #   k=k+1
+  # }
+  # }
   extraittab=tab[which(tab$NAxe == NAxe & tab$NTrace == NTrace),]
   #pour AOR
   extraittab1=tab1[which(tab1$NAxe == NAxe & tab1$NTrace == NTrace),]
@@ -136,7 +142,9 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
   {
     # limite de l'axe x
     xlimg=c(as.POSIXct(paste(datedebgraph,"-1-1",sep="")),as.POSIXct(paste(datefingraph,"-1-1",sep="")))
-    
+    xlimg2=as.POSIXct(paste(datedebgraph,"-1-1",sep=""),tz="CET",origin = "1970-01-01")
+    xlimd=as.POSIXct(paste(datefingraph,"-1-1",sep=""),tz="CET",origin = "1970-01-01")
+    Alab=seq(datedebgraph,datefingraph,length.out=7)
     if (file.exists(chem_courbe))
     {
     # limite de l'axe y (pas sur AOR, JK et MDL)
@@ -187,8 +195,9 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     
     G1=G1+ggtitle(paste('EPR =',ligneres$EPR,"m/an"))+theme(plot.title = element_text(size=10,hjust = 0.5))+
       xlab(NULL)+ylab(NULL)+
-      xlim(xlimg)+
+      # xlim(xlimg)+
       ylim(ylimg)+
+      scale_x_datetime(limits=c(xlimg2,xlimd),breaks=seq(xlimg2,xlimd,length.out=7),labels=Alab)+
       geom_errorbar(aes(as.POSIXct(extraittab$Datemoynum,origin="1970-01-01"),extraittab$Distance,ymin=extraittab$Distance-extraittab$incert/2,ymax=extraittab$Distance+extraittab$incert/2),width=0)+
       theme(legend.position="none")+
       theme(panel.background = element_blank(),panel.grid.major = element_line(size = 0.25, linetype = 'solid',
@@ -242,8 +251,9 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     
     G2=G2+ggtitle(paste('AOR =',ligneres$AOR,"m/an"))+theme(plot.title = element_text(size=10,hjust = 0.5))+
       xlab(NULL)+ylab(NULL)+
-      xlim(xlimg)+
+      # xlim(xlimg)+
       ylim(ylimg)+
+      scale_x_datetime(limits=c(xlimg2,xlimd),breaks=seq(xlimg2,xlimd,length.out=7),labels=Alab)+
       geom_errorbar(aes(as.POSIXct(extraittab$Datemoynum,origin="1970-01-01"),extraittab$Distance,ymin=extraittab$Distance-extraittab$incert/2,ymax=extraittab$Distance+extraittab$incert/2),width=0)+
       theme(legend.position="none")+
       theme(panel.background = element_blank(),panel.grid.major = element_line(size = 0.25, linetype = 'solid',
@@ -280,8 +290,9 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     G3=G3+
       ggtitle(paste('OLS =',ligneres$OLS,"m/an"))+theme(plot.title = element_text(size=10,hjust = 0.5))+
       xlab(NULL)+ylab(NULL)+
-      xlim(xlimg)+
+      # xlim(xlimg)+
       ylim(ylimg)+
+      scale_x_datetime(limits=c(xlimg2,xlimd),breaks=seq(xlimg2,xlimd,length.out=7),labels=Alab)+
       geom_errorbar(aes(as.POSIXct(extraittab$Datemoynum,origin="1970-01-01"),extraittab$Distance,ymin=extraittab$Distance-extraittab$incert/2,ymax=extraittab$Distance+extraittab$incert/2),width=0)+
       theme(legend.position="none")+
       theme(panel.background = element_blank(),panel.grid.major = element_line(size = 0.25, linetype = 'solid',
@@ -375,7 +386,7 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     Tracesel=data.frame(lon=T11Coord[,1],lat=T11Coord[,2])
     Traceligne=Line(Tracesel)
     Traceselline=Lines(Traceligne,ID=1)
-    T1=Tracedeg@lines[[itr]]@Lines[[1]]@coords
+    #T1=Tracedeg@lines[[itr]]@Lines[[1]]@coords
     
     if (plan>0)
     {
@@ -392,7 +403,7 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
       
       nc_map=leaflet()%>%addPolylines(data=Tracedeg,color = "#5F04B4")%>%addPolylines(data=Traceselline,color = "#FF0000")%>%addProviderTiles(providers$Esri.WorldImagery)%>%setView(lng = xmoy, lat = ymoy, zoom = 16)
       
-      mapshot(nc_map,file=paste0(chemin_rep_travail, "\\map.jpeg"))
+      mapshot(nc_map,file=paste0(chemin_rep_travail, "\\map.jpeg"),vwidth = 992,vheight = 744)
       img <- readJPEG(paste(chemin_rep_travail,"\\map.jpeg",sep=""))
       g <- rasterGrob(img, interpolate=TRUE)
       G4=ggplot()+plot(1:10, 1:10, geom="blank") +
@@ -427,8 +438,9 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     G5=G5+
       ggtitle(paste('RLS =',ligneres$RLS,"m/an"))+theme(plot.title = element_text(size=10,hjust = 0.5))+
       xlab(NULL)+ylab(NULL)+
-      xlim(xlimg)+
+      # xlim(xlimg)+
       ylim(ylimg)+
+      scale_x_datetime(limits=c(xlimg2,xlimd),breaks=seq(xlimg2,xlimd,length.out=7),labels=Alab)+
       geom_errorbar(aes(as.POSIXct(extraittab$Datemoynum,origin="1970-01-01"),extraittab$Distance,ymin=extraittab$Distance-extraittab$incert/2,ymax=extraittab$Distance+extraittab$incert/2),width=0)+
       theme(legend.position="none")+
       theme(panel.background = element_blank(),panel.grid.major = element_line(size = 0.25, linetype = 'solid',
@@ -485,8 +497,9 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     
     G6=G6+ggtitle(paste('RWLS =',ligneres$RWLS,"m/an"))+theme(plot.title = element_text(size=10,hjust = 0.5))+
       xlab(NULL)+ylab(NULL)+
-      xlim(xlimg)+
+      # xlim(xlimg)+
       ylim(ylimg)+
+      scale_x_datetime(limits=c(xlimg2,xlimd),breaks=seq(xlimg2,xlimd,length.out=7),labels=Alab)+
       geom_errorbar(aes(as.POSIXct(extraittab$Datemoynum,origin="1970-01-01"),extraittab$Distance,ymin=extraittab$Distance-extraittab$incert/2,ymax=extraittab$Distance+extraittab$incert/2),width=0)+
       theme(legend.position="none")+
       theme(panel.background = element_blank(),panel.grid.major = element_line(size = 0.25, linetype = 'solid',
@@ -541,8 +554,9 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     }
     
     G7=G7+ggtitle(paste('NAxe :',ligneres$NAxe,'- Ntrace :',ligneres$NTrace,'- WLS =',ligneres$WLS,"m/an"))+theme(plot.title = element_text(size=14,hjust = 0.5))+
-      xlim(xlimg)+
+      # xlim(xlimg)+
       ylim(ylimg)+
+      scale_x_datetime(limits=c(xlimg2,xlimd),breaks=seq(xlimg2,xlimd,length.out=7),labels=Alab)+
       geom_errorbar(aes(as.POSIXct(extraittab$Datemoynum,origin="1970-01-01"),extraittab$Distance,ymin=extraittab$Distance-extraittab$incert/2,ymax=extraittab$Distance+extraittab$incert/2),width=0)+
       theme(legend.position="none")+
       theme(panel.background = element_blank(),panel.grid.major = element_line(size = 0.25, linetype = 'solid',
@@ -660,8 +674,9 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     
     G8=G8+ggtitle(paste('JK =',ligneres$JK,"m/an"))+theme(plot.title = element_text(size=10,hjust = 0.5))+
       xlab(NULL)+ylab(NULL)+
-      xlim(xlimg)+
+      # xlim(xlimg)+
       ylim(ylimg)+
+      scale_x_datetime(limits=c(xlimg2,xlimd),breaks=seq(xlimg2,xlimd,length.out=7),labels=Alab)+
       geom_errorbar(aes(as.POSIXct(extraittab$Datemoynum,origin="1970-01-01"),extraittab$Distance,ymin=extraittab$Distance-extraittab$incert/2,ymax=extraittab$Distance+extraittab$incert/2),width=0)+
       theme(legend.position="none")+
       theme(panel.background = element_blank(),panel.grid.major = element_line(size = 0.25, linetype = 'solid',
@@ -716,8 +731,9 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     
     G9=G9+
       xlab(NULL)+ylab(NULL)+
-      xlim(xlimg)+
+      # xlim(xlimg)+
       ylim(ylimg)+
+      scale_x_datetime(limits=c(xlimg2,xlimd),breaks=seq(xlimg2,xlimd,length.out=7),labels=Alab)+
       geom_errorbar(aes(as.POSIXct(extraittab$Datemoynum,origin="1970-01-01"),extraittab$Distance,ymin=extraittab$Distance-extraittab$incert/2,ymax=extraittab$Distance+extraittab$incert/2),width=0)+
       theme(legend.position="none")+
       theme(panel.background = element_blank(),panel.grid.major = element_line(size = 0.25, linetype = 'solid',
@@ -797,13 +813,13 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     
     G10=G10+ggtitle("Traits de côte sur la trace")+theme(plot.title = element_text(size=10,hjust = 0.5))+
       xlab(NULL)+ylab(NULL)+
-      xlim(xlimg)+
+      # xlim(xlimg)+
       ylim(ylimg)+
       geom_errorbar(aes(as.POSIXct(extraittab$Datemoynum,origin="1970-01-01"),extraittab$Distance,ymin=extraittab$Distance-extraittab$incert/2,ymax=extraittab$Distance+extraittab$incert/2),width=0)+
+      scale_x_datetime(limits=c(xlimg2,xlimd),breaks=seq(xlimg2,xlimd,length.out=7),labels=Alab)+
       theme(legend.position="none")+
       theme(panel.background = element_blank(),panel.grid.major = element_line(size = 0.25, linetype = 'solid',
                                                                                colour = "grey"),panel.border = element_rect(colour = "black", fill=NA, size=0.5))
-    
     
     extraittablev=extraittab[which(extraittab$leve == "LEV"),]
     couleurlev=data.frame(R=LIM$R[extraittablev$marqueur],V=LIM$V[extraittablev$marqueur],B=LIM$B[extraittablev$marqueur])
@@ -827,7 +843,7 @@ MOBITC_Export_Graph_1p1<-function(chem_mobitc,chemin_rep_travail,fichier_sque,fi
     }
     G10=G10+
       labs(x=texte_fourn,y="Distance par rapport à la ligne de base (m)")+
-      theme(axis.title.x=element_text(size=12,face="bold",vjust=-2))
+      theme(axis.title.x=element_text(size=12,face="bold",vjust=-1))
     
     
     #l?gende des lim

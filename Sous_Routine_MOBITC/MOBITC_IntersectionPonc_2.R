@@ -22,7 +22,24 @@
 # fichier_trace="20190719T140404--Env-C010-T0250-T-Sque-C005Net-D0055lier-Tra-P200-L0200"
 # chemin_rep_travail="C:\\R\\R-3.3.2\\Cerema\\MOBITC\\Rivages\\carnon"
 # NomTDCinit=rbind("N_traits_cote_naturels_recents_L_extrait2-Carnon.shp","Rivages_Segments_MobiTC_Retenus_extrait2-Carnon.shp")
-
+dirr=R.home()
+fichier_env=""
+chem_mobitc=paste(dirr,"/Cerema/MOBITC",sep="")
+chemin_rep_travail="C:\\0_ENCOURS\\TPM\\Erosion\\MobiTC_20200323"
+fichier_trace="Sque_TPM_2154-Tra-P50-L0050b"
+fichier_sque="Sque_TPM_2154"
+NomTDCinit=rbind("N_traits_cote_naturels_anciens_fr_epsg2154_L_Var_LIM3_MobiTC.shp",
+                 "N_traits_cote_naturels_recents_fr_epsg2154_L_Var_LIM3_MobiTC.shp",
+                 "Rivages_Segments_MobiTC_Retenus.shp",
+                 "TdC_1972_Maregot_MobiTC.shp",
+                 "TdC_1998_Maregot_MobiTC.shp",
+                 "TdC_2003_Maregot_MobiTC.shp",
+                 "TdC_2008_Maregot_MobiTC.shp",
+                 "TdC_2014_Maregot_MobiTC.shp",
+                 "TdC_2017_Maregot_MobiTC.shp"
+)
+methodecoup="methodelarge"
+methodelim="marqauto"
 
 MOBITC_IntersectionPonc_2<-function(chem_mobitc,chemin_rep_travail,fichier_env,fichier_sque,fichier_trace,NomTDCinit,methodecoup,methodelim)
 {
@@ -83,8 +100,8 @@ MOBITC_IntersectionPonc_2<-function(chem_mobitc,chemin_rep_travail,fichier_env,f
   
   for (itr in 1:length(Trace))
   {
-    NAxe=Trace[itr,1]@data
-    NTrace=Trace[itr,2]@data
+    NAxe=data.frame(NAxe=Trace$NAxe[itr])#Trace[itr,1]@data
+    NTrace=data.frame(NTrace=Trace$NTrace[itr])#Trace[itr,2]@data
     Ptsintsque=gIntersection(Sque,Trace[itr,1])
     Xsque=round(Ptsintsque$x,digits=3)
     Ysque=round(Ptsintsque$y,digits=3)
@@ -108,13 +125,15 @@ MOBITC_IntersectionPonc_2<-function(chem_mobitc,chemin_rep_travail,fichier_env,f
           
           Distance=Coef*Distance
           Nbcoup=length(Ptsinttdc)
-          tab=rbind(tab,cbind(NAxe,NTrace,Xsque,Ysque,U,V,Distance,get(tdc.name[itdc])@data[itdcfeat,]$date1,get(tdc.name[itdc])@data[itdcfeat,]$date2,as.character(get(tdc.name[itdc])@data[itdcfeat,]$marqueur),as.character(get(tdc.name[itdc])@data[itdcfeat,]$incert),get(tdc.name[itdc])@data[itdcfeat,]$prj_tdc,get(tdc.name[itdc])@data[itdcfeat,]$leve,get(tdc.name[itdc])@data[itdcfeat,]$product,NomTDC[itdc],Nbcoup))
+          tab=rbind(tab,cbind(NAxe=NAxe,NTrace=NTrace,Xsque,Ysque,U,V,Distance,date1=get(tdc.name[itdc])$date1[itdcfeat],date2=get(tdc.name[itdc])@data[itdcfeat,]$date2,as.character(get(tdc.name[itdc])@data[itdcfeat,]$marqueur),as.character(get(tdc.name[itdc])@data[itdcfeat,]$incert),get(tdc.name[itdc])@data[itdcfeat,]$prj_tdc,get(tdc.name[itdc])@data[itdcfeat,]$leve,get(tdc.name[itdc])@data[itdcfeat,]$product,NomTDC[itdc],Nbcoup))
           rm(Distance)
         }
       }
     }	
   }
   #renome les colonnes car le get fait des noms de colonnes étranges
+  names(tab)[1] <- "NAxe"
+  names(tab)[2] <- "NTrace"
   names(tab)[8] <- "date1"
   names(tab)[9] <- "date2"
   names(tab)[10] <- "marqueur"
@@ -123,7 +142,11 @@ MOBITC_IntersectionPonc_2<-function(chem_mobitc,chemin_rep_travail,fichier_env,f
   names(tab)[13] <- "leve"
   names(tab)[14] <- "product"
   
+  tab=tab[ order( tab[,1],tab[,2]),]
+  
   write.table(tab,chemexp_ip00,sep="\t",eol="\n",quote=FALSE,row.names=FALSE,col.names=TRUE)
+  
+  #tab=read.table(chemexp_ip00,sep="\t",header=TRUE,row.names = NULL)
   
   #purge de dÃ©passement de l'enveloppe
   tab4=tab
@@ -171,11 +194,16 @@ MOBITC_IntersectionPonc_2<-function(chem_mobitc,chemin_rep_travail,fichier_env,f
     {
       todel=which(tab3$NAxe==tab3[double[1],]$NAxe & tab3$NTrace==tab3[double[1],]$NTrace & tab3$Distance < max(exttraitdouble$Distance) & tab3$date1==tab3[double[1],]$date1 & tab3$marqueur==tab3[double[1],]$marqueur & tab3$incert==tab3[double[1],]$incert & tab3$leve==tab3[double[1],]$leve & tab3$product==tab3[double[1],]$product)
       print(todel)
+      if (length(todel)==0) #ça veut dire qu'ils sont égaux
+      {
+        todel=double[2:length(double)]
+      }
       if (length(todel)>=1)
       {
         tab3=tab3[-todel,]
         row.names(tab3) <- 1:nrow(tab3)
       }
+      
     }
     #le + Ã  la cÃ´te
     if (methodecoup=="methodecote")

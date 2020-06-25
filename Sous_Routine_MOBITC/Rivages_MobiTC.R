@@ -9,15 +9,15 @@ library(rgeos)
 # L'objectif de cette routine est de ne garder des donnees rivages que les donnees "assez sures"
 # Pour cela 2 methodes
 # 1: Ne garder que les points assez proches, si une vitesse plus de 6km/h, on enleve
-reglevitesse=8*1000/3600
+reglevitesse=12*1000/3600
 # 2: Ensuite, on prend les regles de hdop, vdop, pdop accessible sur https://en.wikipedia.org/wiki/Dilution_of_precision_(navigation)
 regledop=cbind(rbind(2,1,0),rbind(5,2,1),rbind(15,10,5))
 # 3: Diff?rence de temps entre 2 points si >1s BUG
 Dcritic=1.1
 # 4: Avoir une ?l?vation entre +/- altitude m
-Alt=15
+Alt=30
 # 5: Si moins de 25% ? garder avec ces filtres => Suppression de tout le segment
-Rejet=0.25
+Rejet=0.10
 
 # si que 10% pas bon alors on garde sauf les 1ers points
 
@@ -33,7 +33,7 @@ Coef=cbind(Coef,as.matrix(Multi*Coef,nrow=1))
 TauxMob=0.8
 
 # 7: Avoir des blocs d'a minima 10 points ok sinon boom
-NPoints=10
+NPoints=5 #10
 # voir si on met des regles pour avoir un minimum de points par segment, en gros on ne chercherait ? garder que des endroits ou un segment est bon sur une grande longueur
 # Voir pour intégrer le type de téléphone
 
@@ -42,7 +42,10 @@ chemin="C:\\RIVAGES_ZIP_TDC"
 chemin="C:\\R\\R-3.3.2\\Cerema\\MOBITC\\Rivages\\Donnees_brutes\\Rivages_Points"
 chemin="C:\\0_ENCOURS\\TPM\\Erosion\\TDC_brut\\RIVAGES"
 chemin="C:\\0_ENCOURS\\MOBITC_hotline\\Tuto_MOBITCR"
-nomlayer="TDC_Rivages_Points_L93"
+chemin="C:\\0_ENCOURS\\TPM\\Erosion\\TDC_brut\\RIVAGES\\20200323"
+nomlayer="Rivages_points_TPM_20200323"
+chemin="C:\\0_ENCOURS\\MOBITC\\TDC_brut\\rivages"
+nomlayer="n_rivages_points_p_fre_carnon_L93"
 # nomlayer="Rivages_Points_MobiTC_France"
 # nomlayer="Rivages_Points_2154_extrait2"
 # nomlayer="Rivages_points_TPM"
@@ -98,37 +101,37 @@ print("#---- 1?re selection avec distance, delta temps et hdop, vdop, pdop altit
 nb=which(!(tableau[,"DistRel"]>reglevitesse | tableau[,"DTemps"]>Dcritic | abs(tableau[,"ele"])>Alt | tableau[,"hdop"]>max(regledop[,2]) | tableau[,"vdop"]>max(regledop[,2])| tableau[,"pdop"]>max(regledop[,2])))
 #nb=which(!(tableau[,"DistRel"]>reglevitesse | tableau[,"DTemps"]>Dcritic | tableau[,"hdop"]>max(regledop[,2]) | tableau[,"vdop"]>max(regledop[,2])| tableau[,"pdop"]>max(regledop[,2])))
 tableau[nb,"Agarder"]=1
-for (isegm in unique(tableau[,"nsegment"]))
-{
-  print(isegm)
-  nisegm=which(tableau[,"nsegment"]==isegm)
-  if (mean(tableau[nisegm,"Agarder"])<Rejet)
-  {tableau[nisegm,"Agarder"]=0}
-  
-  
-  for (filt in Coef[,1])
-  { 
-    nomcol=paste("MoyMobi",Coef[filt,1],sep="")
-    if (filt==1)
-    {
-      tableau[nisegm,nomcol]=tableau[nisegm,"Agarder"]
-    }else{
-      tableau[nisegm,nomcol]=tableau[nisegm,paste("MoyMobi",(Coef[filt,1]-1),sep="")]
-    }
-    if (length(nisegm)>Coef[filt,2])
-    {
-      #---- Moyenne Mobile"
-      moymob=filter(tableau[nisegm,nomcol],rep(1,Coef[filt,2]))/Coef[filt,2]
-      
-      var=as.matrix(((Coef[filt,2]-1)/2+1):(length(nisegm)-((Coef[filt,2]-1)/2)),nrow=1)
-      
-      nb=which(moymob[var]>=TauxMob)
-      tableau[nisegm[var[nb]],nomcol]=1
-      #tableau[nisegm[var[-nb]],"MoyMobil"]=0
-      #tableau[nisegm[-var],"MoyMobil"]=moymob[-var]
-    }
-  }
-}
+# for (isegm in unique(tableau[,"nsegment"]))
+# {
+#   print(isegm)
+#   nisegm=which(tableau[,"nsegment"]==isegm)
+#   if (mean(tableau[nisegm,"Agarder"])<Rejet)
+#   {tableau[nisegm,"Agarder"]=0}
+#   
+#   
+#   for (filt in Coef[,1])
+#   { 
+#     nomcol=paste("MoyMobi",Coef[filt,1],sep="")
+#     if (filt==1)
+#     {
+#       tableau[nisegm,nomcol]=tableau[nisegm,"Agarder"]
+#     }else{
+#       tableau[nisegm,nomcol]=tableau[nisegm,paste("MoyMobi",(Coef[filt,1]-1),sep="")]
+#     }
+#     if (length(nisegm)>Coef[filt,2])
+#     {
+#       #---- Moyenne Mobile"
+#       moymob=filter(tableau[nisegm,nomcol],rep(1,Coef[filt,2]))/Coef[filt,2]
+#       
+#       var=as.matrix(((Coef[filt,2]-1)/2+1):(length(nisegm)-((Coef[filt,2]-1)/2)),nrow=1)
+#       
+#       nb=which(moymob[var]>=TauxMob)
+#       tableau[nisegm[var[nb]],nomcol]=1
+#       #tableau[nisegm[var[-nb]],"MoyMobil"]=0
+#       #tableau[nisegm[-var],"MoyMobil"]=moymob[-var]
+#     }
+#   }
+# }
 
 #---- R?cup?ration des modifications du tableau
 

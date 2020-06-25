@@ -15,7 +15,7 @@ V5<-c(0,0,0,0,255,255,255,150,0,128,0,204,102,255,0,0,128,192,0,0,255,102,153,51
 Liste<-list(V1,V2,V3,V4,V5)
 Data0<-data.frame(Liste)
 colnames(Data0)<-c("ID","LIM","R","V","B")
-write.table(Data0,chem_exp,sep="\t",eol="\n",append=FALSE,quote=FALSE,row.names=FALSE,col.names=TRUE)#,fileEncoding="UTF-8")
+write.table(Data0,chem_exp,sep="\t",eol="\n",append=FALSE,quote=FALSE,row.names=FALSE,col.names=TRUE,fileEncoding="UTF-8")
 Data=read.table(chem_exp,sep="\t",header=TRUE,quote="",row.names = NULL,fileEncoding="UTF-8")
 }
 

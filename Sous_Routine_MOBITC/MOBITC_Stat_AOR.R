@@ -19,10 +19,9 @@ MOBITC_Stat_AOR<-function(distTDC,numdateTDC,IC,datex,numdateprosp)
 		colnames(resi)[2]="bi"
 		colnames(resi)[1]="ai"
 
-		res=mean(resi[,1])*datex+mean(resi[,2])
+		res=mean(resi[,1],na.rm = TRUE)*datex+mean(resi[,2],na.rm = TRUE)
 	colnames(res)[1]="AORfit"
-
-	taux=round(mean(resi[,1])*365.25*24*3600,digits=2)
+	taux=round(mean(resi[,1],na.rm = TRUE)*365.25*24*3600,digits=2)
 	} else {
 	taux=NA
 	res=cbind(NA*seq(1,1,length=length(datex[,1])))

@@ -1,0 +1,11 @@
+`r paste0('#', subpage_nom[k], '{data-navmenu="Statistiques détaillées"}')`
+
+
+Row 
+---------------------------
+`r paste0("### **Statistiques détaillées  - ",subpage_nom[k],"**")`
+<!-- ### **Graphiques** -->
+```{r echo=FALSE,warning=FALSE,fig.width=10,fig.height=7.5,out.width=20,out.height=15}
+  mise_en_page=matrix(c(1,2,3,4,5,6,7,7,8,9,7,7), 3, 4, byrow = TRUE)
+multiplot(subpage_graph[[1]],subpage_graph[[2]],subpage_graph[[3]],subpage_graph[[4]],subpage_graph[[5]],subpage_graph[[6]],subpage_graph[[7]],subpage_graph[[8]],subpage_graph[[9]],layout=mise_en_page)
+```

@@ -9,12 +9,14 @@
 # datedebgraph="1920"
 # datefingraph="2020"
 # dateprosp="2100"
-
-# datedebevol="1950;2000;2010"
+fichier_intersection="20180502T124233--Env-C010-T0250-Sque-C001liersimpl-Carnon-Tra-P50-L0200-select-IntersTDC-v1.txt"
 
 
 MOBITC_Evolution<-function(chem_mobitc,chemin_rep_travail,fichier_intersection,produc,ICtx,datedebgraph,datefingraph,dateprosp)
 {
+  datedebevol="1950;2000;2010"
+
+  
 #lecture du fichier intersection V1 normalement
 chem_intersection=paste(chemin_rep_travail,"\\",fichier_intersection,sep="")
 tab0=read.table(chem_intersection,sep="\t",header=TRUE,row.names = NULL)
@@ -91,12 +93,12 @@ for (ievol in 1:(nrow(datecoup)+1))
   		Angle=round(atan(V)/atan(U),digits=3)
   		Marqueur=extraittab$marqueur[1]
   		NDate=nrow(extraittab)
-  		DateTDCvieux=as.POSIXct(min(extraittab$Datemoynum),origin = "1970-01-01")
-  		DateTDCrecent=as.POSIXct(max(extraittab$Datemoynum),origin = "1970-01-01")
+  		DateTDCvieux=as.POSIXct(min(extraittab$Datemoynum,na.rm = TRUE),origin = "1970-01-01")
+  		DateTDCrecent=as.POSIXct(max(extraittab$Datemoynum,na.rm = TRUE),origin = "1970-01-01")
   		
   		Duree=round(difftime(DateTDCrecent,DateTDCvieux,units="days")/365.25,digits = 3)
   		
-  		Amplitude=round(max(extraittab$Distance)-min(extraittab$Distance),digits=3)
+  		Amplitude=round(max(extraittab$Distance,na.rm = TRUE)-min(extraittab$Distance,na.rm = TRUE),digits=3)
   		
   		ligneres=cbind(NAxe,NTrace,Xsque,Ysque,U,V,Angle,NDate,Duree,Amplitude,DateTDCvieux=format(DateTDCvieux,"%Y-%m-%d"),DateTDCrecent=format(DateTDCrecent,"%Y-%m-%d"),Marqueur)
   		ligneres=as.data.frame(ligneres)
@@ -115,7 +117,7 @@ for (ievol in 1:(nrow(datecoup)+1))
   	
   			#EPR
   			source(paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Stat_EPR.R",sep=""))
-  			extraittabEPR=extraittab[which(extraittab$Datemoynum == min(extraittab$Datemoynum) | extraittab$Datemoynum == max(extraittab$Datemoynum)),]
+  			extraittabEPR=extraittab[which(extraittab$Datemoynum == min(extraittab$Datemoynum,na.rm = TRUE) | extraittab$Datemoynum == max(extraittab$Datemoynum,na.rm = TRUE)),]
   			sortieEPR=MOBITC_Stat_EPR(extraittabEPR$Distance,extraittabEPR$Datemoynum,IC,datex,numdateprosp)
   			
   			if (nrow(sortieEPR[[2]])==nrow(datex))
