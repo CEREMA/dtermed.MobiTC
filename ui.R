@@ -11,10 +11,19 @@ chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Aide.R",sep="")
 source(chemsource)
 aide=MOBITC_Aide(chem_mobitc)
 
-texte_sque_coup=div(h3("Manipulations"),
+texte_sque_coup=div(
           p("Suite à un problème de mise à jour dans un package R la création de la ligne de base ne peut pas se faire entièrement dans R.
                  Une solution temporaire a été trouvée en s'appuyant que Qgis"),
-          p("Après avoir appuyer sur Lancer, le fichier Points_env.shp se créé dans le réprtoire de travail. Il faut suivre rigoureusement les étapes suivantes :"),
+          p("Commencer par actualiser le menu, le chemin du répertoire de travail et le nom du fichier enveloppe s'affichent."),
+          p("La squelettisation, c'est-à-dire la génération d'une ligne médiane à travers l'enveloppe, s'effectue dans MobiTC à partir du diagramme de Voronoï et de points :"),
+          p("- situés sur les nœuds du contour de l'enveloppe,"),
+          p("- et situés tous les zzz m (distance de coupure de l'enveloppe)."),
+          h3("Entrées :"),
+          h4("Distance de coupure de l'enveloppe"),
+          p("Cette distance est donnée en mètre. Sur de grandes étendues le calcul peut devenir un peu long si cette distance est trop faible."),
+          span(style="color:green","Valeur Tuto : 1"),
+          p("Après avoir appuyer sur Lancer, le fichier Points_env.shp se crée dans le répertoire de travail. Il faut suivre rigoureusement les étapes suivantes :"),
+          h3("Manipulations dans Qgis :"),
           p("1 - ouvrir Qgis"),
           p("2 - ouvrir le fichier Points_env.shp"),
           p("3 - aller dans le menu Vecteur, puis Outils de géométrie, puis Polygones de Voronoi..."),
@@ -24,7 +33,8 @@ texte_sque_coup=div(h3("Manipulations"),
           p("6 - dans la fenêtre Polygones vers lignes, choisir comme couche d'entrée : Polygones de Voronoi, puis Exécuter. Quand le calcul est fini
                 les polylignes s'affichent à l'écran."),
           p("7 - exporter la couche Lignes au format ESRI shapefile la renommant voronoi dans le répertoire de travail."),
-          p("Cette étape est finie, il convient de passer au menu Création du squelette de MobiTC")
+          p("Attention à la projection, celle-ci doit être identique aux traits de côte."),
+          p("Cette étape est finie, il convient de passer au menu Création du squelette de MobiTC.")
 )
 
 
@@ -49,8 +59,8 @@ shinyUI(
                     ),
                     mainPanel(
                       tabsetPanel(
-                        tabPanel("Résultats",icon=icon("align-justify"),textOutput("textpack")), 
-                        tabPanel("Aide", icon=icon("info-circle"),aide$aide_pack))
+                        tabPanel("Aide", icon=icon("info-circle"),aide$aide_pack)),
+                        tabPanel("Résultats",icon=icon("align-justify"),textOutput("textpack"))
                     )	
            ),	#fin tabPanel(title="Répertoire",           
 		tabPanel(title="Répertoire",
@@ -62,28 +72,28 @@ shinyUI(
 				),
 			mainPanel(
 			  tabsetPanel(
-			    tabPanel("Résultats",icon=icon("align-justify"),textOutput("textrep")), 
-			    tabPanel("Aide", icon=icon("info-circle"),aide$aide_init))
+			    tabPanel("Aide", icon=icon("info-circle"),aide$aide_init)),
+			    tabPanel("Résultats",icon=icon("align-justify"),textOutput("textrep"))
 		  )	
 		),	#fin tabPanel(title="Répertoire",
-				tabPanel(title="Fournisseur TDC",
-					headerPanel("Liste des fournisseurs de traits de côte"),
-					sidebarPanel(
-						actionButton("voirF", "voir la liste"),
-						textInput(inputId = "NCF",
-		                    label = "Nom court",
-		                    value = ""),
-						textInput(inputId = "NLF",
-		                    label = "Nom long",
-		                    value = ""),
-						actionButton("rajoutF", "insérer")
-						),
-					mainPanel(
-					  tabsetPanel(
-					    tabPanel("Résultats",icon=icon("table"),tableOutput("tabF")),
-					    tabPanel("Aide", icon=icon("info-circle"),aide$aide_fourn)
-					  ))
-				),#fin tabPanel(title="Fournisseur TDC",
+		# 		tabPanel(title="Fournisseur TDC",
+		# 			headerPanel("Liste des fournisseurs de traits de côte"),
+		# 			sidebarPanel(
+		# 				actionButton("voirF", "voir la liste"),
+		# 				textInput(inputId = "NCF",
+		#                     label = "Nom court",
+		#                     value = ""),
+		# 				textInput(inputId = "NLF",
+		#                     label = "Nom long",
+		#                     value = ""),
+		# 				actionButton("rajoutF", "insérer")
+		# 				),
+		# 			mainPanel(
+		# 			  tabsetPanel(
+		# 			    tabPanel("Résultats",icon=icon("table"),tableOutput("tabF")),
+		# 			    tabPanel("Aide", icon=icon("info-circle"),aide$aide_fourn)
+		# 			  ))
+		# 		),#fin tabPanel(title="Fournisseur TDC",
   		tabPanel(title="Marqueur TDC",
   			headerPanel("Liste des marqueurs du trait de côte"),
   			sidebarPanel(
@@ -91,8 +101,9 @@ shinyUI(
   				),
   			mainPanel(
   			  tabsetPanel(
-  			    tabPanel("Résultats",icon=icon("table"),span(tableOutput("tabL"))), #,style="color: #A7FC00"
-  			    tabPanel("Aide", icon=icon("info-circle"),aide$aide_liste_tdc)
+  			    tabPanel("Aide", icon=icon("info-circle"),aide$aide_liste_tdc),
+  			    tabPanel("Résultats",icon=icon("table"),span(tableOutput("tabL"))) #,style="color: #A7FC00"
+  			   
   				))
   		), #fin tabPanel(title="Marqueur TDC",
 		tabPanel(title = "Mise en forme des tdc",
@@ -132,8 +143,9 @@ shinyUI(
 		),
 		mainPanel(
 		  tabsetPanel(
-		    tabPanel("Résultats",icon=icon("map"),textOutput("textenv"),leafletOutput("mapenv")),
-		    tabPanel("Aide", icon=icon("info-circle"),aide$aide_env)
+		    tabPanel("Aide", icon=icon("info-circle"),aide$aide_env),
+		    tabPanel("Résultats",icon=icon("map"),textOutput("textenv"),leafletOutput("mapenv"))
+		    
 			)
 		)
     ), #fin tabPanel(title = "Enveloppe",
@@ -152,8 +164,8 @@ shinyUI(
                         ),
                         mainPanel(
                           tabsetPanel(
-                            tabPanel("Résultats",icon=icon("map"),texte_sque_coup),
-                            tabPanel("Aide", icon=icon("info-circle"),aide$aide_sque_coup)
+                            tabPanel("Aide", icon=icon("info-circle"),aide$aide_sque_coup),
+                            tabPanel("Résultats",icon=icon("map"),texte_sque_coup)
                           )
                         )
                ),# fin tabPanel(title="Coupure de l'enveloppe",         
@@ -167,8 +179,9 @@ shinyUI(
 					),
 				mainPanel(
 				  tabsetPanel(
-				    tabPanel("Résultats",icon=icon("map"),textOutput("textsque"),leafletOutput("mapsque")),
-				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_sque)
+				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_sque),
+				    tabPanel("Résultats",icon=icon("map"),textOutput("textsque"),leafletOutput("mapsque"))
+				    
 					)
 				)
 			),# fin tabPanel(title="Création du squelette",
@@ -184,8 +197,9 @@ shinyUI(
 				),
 				mainPanel(
 				  tabsetPanel(
-				    tabPanel("Résultats",icon=icon("map"),textOutput("textsquerac"),leafletOutput("mapsquerac")),
-				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_squerac)
+				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_squerac),
+				    tabPanel("Résultats",icon=icon("map"),textOutput("textsquerac"),leafletOutput("mapsquerac"))
+				    
 				  )
 				)
 			), #fin tabPanel(title="Raccordement du squelette",
@@ -202,8 +216,9 @@ shinyUI(
 					),
 				mainPanel(
 				  tabsetPanel(
-				    tabPanel("Résultats",icon=icon("map"),textOutput("textsqueorr"),plotOutput("mapsqueorr")),
-				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_squeorr)
+				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_squeorr),
+				    tabPanel("Résultats",icon=icon("map"),textOutput("textsqueorr"),plotOutput("mapsqueorr"))
+				    
 					)
 				)
         ), # fin tabPanel(title="Orientation du squelette",
@@ -214,8 +229,9 @@ shinyUI(
 					),
 				mainPanel(
 				  tabsetPanel(
-				    tabPanel("Résultats",icon=icon("map"),textOutput("textsquelisse"),plotOutput("mapsquelisse")),
-				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_squelisse)
+				     tabPanel("Aide", icon=icon("info-circle"),aide$aide_squelisse),
+				    tabPanel("Résultats",icon=icon("map"),textOutput("textsquelisse"),plotOutput("mapsquelisse"))
+				   
 				  )
 				)
 			) # fin tabPanel(title="Lissage du squelette",
@@ -239,8 +255,8 @@ shinyUI(
                     ),
 				mainPanel(
 				  tabsetPanel(
-				    tabPanel("Résultats",icon=icon("map"),textOutput("texttrace"),leafletOutput("maptrace")),
-				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_trace)
+				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_trace),
+				    tabPanel("Résultats",icon=icon("map"),textOutput("texttrace"),leafletOutput("maptrace"))
 				  )
 				)
 			), #fin tabPanel(title="Création des traces",
@@ -258,8 +274,8 @@ shinyUI(
 					),
 				mainPanel(
 				  tabsetPanel(
-				    tabPanel("Résultats",icon=icon("map"),textOutput("texttracelisse"),leafletOutput("maptracelisse")),
-				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_tracelisse)
+				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_tracelisse),
+				    tabPanel("Résultats",icon=icon("map"),textOutput("texttracelisse"),leafletOutput("maptracelisse"))
 				  )
 				)
         ) # fin tabPanel(title="Lissage des traces",
@@ -278,15 +294,16 @@ shinyUI(
 					uiOutput("actu_fich_trace_ip"),
 					# fileInput(inputId="fichier_tracef1", "Choisir le fichier des traces", multiple = FALSE),
 					# fileInput(inputId="fichier_tdc2", "Choisir les fichiers tdc", multiple = TRUE),
-					radioButtons(inputId="methode_ip", "Methode de calcul",c("le plus au large"="methodelarge","le plus a la cote"="methodecote")),
-					radioButtons(inputId="methode_ip_lim","Type de marqueurs",c("choix manuel"="marqmanu","choix auto sur le plus frequent"="marqauto"),selected="marqauto"),
+					radioButtons(inputId="methode_ip", "Methode de calcul",c("le plus au large"="methodelarge","le plus a la côte"="methodecote")),
+					radioButtons(inputId="methode_ip_lim","Type de marqueurs",c("choix manuel"="marqmanu","choix auto sur le plus fréquent"="marqauto"),selected="marqauto"),
 					fileInput(inputId="fichier_tdc_ip", "Choisir les fichiers des tdc", multiple = TRUE,accept=".shp"),
 					actionButton("interponc", "Lancer")
 				),
 				mainPanel(
 				  tabsetPanel(
-				    tabPanel("Résultats",icon=icon("table"),textOutput("textip"),tableOutput("tableip")),
-				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_ip)
+				      tabPanel("Aide", icon=icon("info-circle"),aide$aide_ip),
+				    tabPanel("Résultats",icon=icon("table"),textOutput("textip"),tableOutput("tableip"))
+				  
 				  )
 				)
 			) #fin tabPanel(title="ponctuelles",
@@ -321,10 +338,10 @@ navbarMenu(title="Evolution",
              checkboxGroupInput(inputId="IC","Intervalles de confiance",c("IC 70%"="IC70","IC 90%"="IC90"), selected = NULL, inline = FALSE),
              numericInput(inputId = "datedebgraph",
                           label = "Date de debut des graphiques",
-                          value = 1950, min = 1800, max = 2200 , step=10),
+                          value = 1940, min = 1800, max = 2200 , step=10),
 			 numericInput(inputId = "datefingraph",
                           label = "Date de fin des graphiques",
-                          value = 2020, min = 1800, max = 2200 , step=10),
+                          value = 2040, min = 1800, max = 2200 , step=10),
 			 numericInput(inputId = "dateprosp",
                           label = "Annee de l'extrapolation prospective",
                           value = 2100, min = 2020, max = 2200 , step=10),
@@ -332,30 +349,65 @@ navbarMenu(title="Evolution",
 		),
 		mainPanel(
 		  tabsetPanel(
-		    tabPanel("Résultats",icon=icon("table"),textOutput("textevol"),tableOutput("tableevol")),
-		    tabPanel("Aide", icon=icon("info-circle"),aide$aide_evol)
+		    tabPanel("Aide", icon=icon("info-circle"),aide$aide_evol),
+		    tabPanel("Résultats",icon=icon("table"),textOutput("textevol"),tableOutput("tableevol"))
+		    
 		  )
 		)
-    ),# fin tabPanel(title="Calcul évolution",
+    )# fin tabPanel(title="Calcul évolution",
 
-tabPanel(title="Graph évolution",
-   headerPanel("Export des graphiques des évolutions"),
-   sidebarPanel(
-     uiOutput("actu_menu_graph"),
-     uiOutput("actu_fich_travail_graph"),
-     uiOutput("actu_fich_trace_graph"),
-     uiOutput("actu_fich_intersection_graph"),
-     fileInput(inputId="fichier_evolution_graph", "Choisir le fichier de l'évolution", multiple = FALSE,accept="txt"),
-     actionButton("export_graphb", "Exporter les graphiques par trace")
-   ),
-   mainPanel(
-     tabsetPanel(
-       tabPanel("Résultats",icon=icon("table"),textOutput("textexportgraph")),
-       tabPanel("Aide", icon=icon("info-circle"),aide$aide_graph)
-   )
-   )
-  )# fin tabPanel(title="Graph évolution",
+# tabPanel(title="Graph évolution",
+#    headerPanel("Export des graphiques des évolutions"),
+#    sidebarPanel(
+#      uiOutput("actu_menu_graph"),
+#      uiOutput("actu_fich_travail_graph"),
+#      uiOutput("actu_fich_trace_graph"),
+#      uiOutput("actu_fich_intersection_graph"),
+#      fileInput(inputId="fichier_evolution_graph", "Choisir le fichier de l'évolution", multiple = FALSE,accept="txt"),
+#      actionButton("export_graphb", "Exporter les graphiques par trace")
+#    ),
+#    mainPanel(
+#      tabsetPanel(
+#        tabPanel("Résultats",icon=icon("table"),textOutput("textexportgraph")),
+#        tabPanel("Aide", icon=icon("info-circle"),aide$aide_graph)
+#    )
+#    )
+#   )# fin tabPanel(title="Graph évolution",
 ),# fin navbar
+
+##########MENU EXPORT SIG #############
+navbarMenu(title="Export SIG",
+           tabPanel(title="Histogrammes",
+                    headerPanel("Export SIG des taux calculés sous forme d'histogrammes"),
+                    sidebarPanel(
+                      uiOutput("actu_menu_histo"),
+                      uiOutput("actu_fich_travail_histo"),
+                      uiOutput("actu_fich_trace_histo"),
+                      fileInput(inputId="fichier_evolution_hist", "Choisir les fichiers de l'évolution (-MobiTC.txt)", multiple = TRUE,accept="txt"),
+                      #uiOutput("actu_fich_mobitc_histo"),
+                      numericInput(inputId = "largeur_histo",
+                                   label = "Largeur en mètre des histogrammes",
+                                   value = 100, min = 1, max = 5000, step=1),
+                      numericInput(inputId = "longueur_histo",
+                                   label = "Longueur en mètre representant un taux de 1m/an",
+                                   value = 100, min = 1, max = 5000, step=1),
+                      numericInput(inputId = "tronqu_histo",
+                                   label = "Taux en m/an à partir duquel les histogrammes sont de longueurs constantes",
+                                   value = 10, min = 0.1, max = 5000, step=1),
+                      selectInput(inputId="taux_histo", "Choisir le type de taux",c("EPR"="EPR","AOR"="AOR","OLS"="OLS","WLS"="WLS","RLS"="RLS","RWLS"="RWLS","JK"="JK","MDL"="MDL"),
+                                  selected = "WLS", multiple = TRUE,selectize = FALSE,  size = 8),
+                      actionButton("histo", "Lancer")
+                    ),
+                    mainPanel(
+                      tabsetPanel(
+                         tabPanel("Aide", icon=icon("info-circle"),aide$aide_histo),
+                        tabPanel("Résultats",icon=icon("map"),textOutput("texthisto"),leafletOutput("maphisto"))
+                       
+                      )
+                    )
+           ) # fin 	tabPanel(title="Histogrammes",
+), # fin navbarMenu(title="Export SIG",
+
 
   		tabPanel(title="Export Rapport html",
   		         headerPanel("Export de rapport sur l'évolution"),
@@ -369,10 +421,11 @@ tabPanel(title="Graph évolution",
   		         ),
   		         mainPanel(
   		           tabsetPanel(
-  		             tabPanel("Résultats",icon=icon("table"),textOutput("textexportrapport")),
-  		             tabPanel("Aide", icon=icon("info-circle"),aide$aide_rapport)
+  		             tabPanel("Aide", icon=icon("info-circle"),aide$aide_rapport),
+  		             tabPanel("Résultats",icon=icon("table"),textOutput("textexportrapport"))
+  		             
   		           ))
-		), #fin tabPanel(title="Rapport évolution",
+		) #fin tabPanel(title="Rapport évolution",
 
 
 # # 	tabPanel(title="Graphiques",
@@ -398,37 +451,7 @@ tabPanel(title="Graph évolution",
 # # 			 )
 # # 		),
 
-##########MENU EXPORT SIG #############
-	navbarMenu(title="Export SIG",
-		tabPanel(title="Histogrammes",
-			headerPanel("Export SIG des taux calculés sous forme d'histogrammes"),
-			sidebarPanel(
-				 uiOutput("actu_menu_histo"),
-				 uiOutput("actu_fich_travail_histo"),
-				 uiOutput("actu_fich_trace_histo"),
-				 fileInput(inputId="fichier_evolution_hist", "Choisir le fichier de l'évolution (-MobiTC.txt)", multiple = FALSE,accept="txt"),
-				 #uiOutput("actu_fich_mobitc_histo"),
-				 numericInput(inputId = "largeur_histo",
-							  label = "Largeur en mètre des histogrammes",
-							  value = 100, min = 1, max = 5000, step=1),
-				 numericInput(inputId = "longueur_histo",
-							  label = "Longueur en mètre representant un taux de 1m/an",
-							  value = 100, min = 1, max = 5000, step=1),
-				 numericInput(inputId = "tronqu_histo",
-							  label = "Taux en m/an à partir duquel les histogrammes sont de longueurs constantes",
-							  value = 10, min = 0.1, max = 5000, step=1),
-				 selectInput(inputId="taux_histo", "Choisir le type de taux",c("EPR"="EPR","AOR"="AOR","OLS"="OLS","WLS"="WLS","RLS"="RLS","RWLS"="RWLS","JK"="JK","MDL"="MDL"),
-							 selected = "WLS", multiple = TRUE,selectize = FALSE,  size = 8),
-				 actionButton("histo", "Lancer")
-				 ),
-			mainPanel(
-			  tabsetPanel(
-				 tabPanel("Résultats",icon=icon("map"),textOutput("texthisto"),leafletOutput("maphisto")),
-				 tabPanel("Aide", icon=icon("info-circle"),aide$aide_histo)
-			   )
-			)
-		) # fin 	tabPanel(title="Histogrammes",
-	) # fin navbarMenu(title="Export SIG",
+
 # 		
 # 	tabPanel(title="Quitter",
 # 		headerPanel("Quitter MobiTC"),

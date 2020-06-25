@@ -1,3 +1,6 @@
+###########################
+#reopen with encoding utf8#
+###########################
 if(!require(shiny)){install.packages("shiny")}
 library(shiny)
 if(!require(ggmap)){install.packages("ggmap")}
@@ -40,7 +43,8 @@ shinyServer(function(input, output) {
 	  close(fid)
 	  chemin_rep_travail=lignes[2]
 	  chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Fournisseur.R",sep="")
-	  source(chemsource)
+	  eval(parse(chemsource, encoding="UTF-8"))
+	  #source(chemsource)
 	  sortieF=MOBITC_Fournisseur(chemin_rep_travail)
 	  sortieF[[1]]
 	  })
@@ -56,7 +60,8 @@ shinyServer(function(input, output) {
 	                 close(fid)
 	                 chemin_rep_travail=lignes[2]
 	                 chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_RajoutFournisseur.R",sep="")
-	                 source(chemsource)
+	                 #source(chemsource)
+	                 eval(parse(chemsource, encoding="UTF-8"))
 	                 sortieF2=MOBITC_RajoutFournisseur(chemin_rep_travail,isolate(input$NCF),isolate(input$NLF))
 	                 sortieF2[[1]]
 	               })
@@ -72,7 +77,8 @@ shinyServer(function(input, output) {
 	                 close(fid)
 	                 chemin_rep_travail=lignes[2]
 	                 chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Limite.R",sep="")
-	                 source(chemsource)
+	                 #source(chemsource)
+	                 eval(parse(chemsource, encoding="UTF-8"))
 	                 sortieL=MOBITC_Limite(chemin_rep_travail)
 	                 sortieL[[1]]
 	               })
@@ -555,6 +561,39 @@ observeEvent(input$export_graphb,
                output$textexportgraph<-renderText(sortiegraph)
              })
 
+observeEvent(input$actu_menu_histo_but,
+             {
+               output$actu_fich_travail_histo <- renderUI({
+                 {
+                   fichier_init=paste(chem_mobitc,"\\Init_Routine_MobiTC.txt",sep="")
+                   if (file.exists(fichier_init)==TRUE) {
+                     fid=file(fichier_init, open = "r")
+                     lignes <- readLines(fid)
+                     close(fid)} else {lignes=rep("",14)}
+                 }
+                 textInput(inputId ="chemin_rep_travail_histo","Chemin du répertoire de travail",value = lignes[2])})
+               
+               output$actu_fich_trace_histo <- renderUI({
+                 {
+                   fichier_init=paste(chem_mobitc,"\\Init_Routine_MobiTC.txt",sep="")
+                   if (file.exists(fichier_init)==TRUE) {
+                     fid=file(fichier_init, open = "r")
+                     lignes <- readLines(fid)
+                     close(fid)} else {lignes=rep("",14)}
+                 }
+                 textInput(inputId="fichier_trace_histo", "Nom du fichier des traces", value = lignes[10])}) 
+               
+             })
+
+observeEvent(input$histo,
+             {
+               chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Export_Histo.R",sep="")
+               source(chemsource)		
+               sortiehisto=MOBITC_Export_Histo(chem_mobitc,isolate(input$chemin_rep_travail_histo),isolate(input$fichier_trace_histo),isolate(input$fichier_evolution_hist$name),isolate(input$largeur_histo),isolate(input$longueur_histo),isolate(input$tronqu_histo),isolate(input$taux_histo))
+               output$texthisto<-renderText(sortiehisto[[1]])	
+             })
+
+
 output$actu_menu_rapport  <- renderUI({
   actionButton("actu_menu_rapport_but", "Actualiser le menu")
 })
@@ -625,37 +664,6 @@ output$actu_menu_histo  <- renderUI({
   actionButton("actu_menu_histo_but", "Actualiser le menu")
 })
 
-observeEvent(input$actu_menu_histo_but,
-             {
-               output$actu_fich_travail_histo <- renderUI({
-                 {
-                   fichier_init=paste(chem_mobitc,"\\Init_Routine_MobiTC.txt",sep="")
-                   if (file.exists(fichier_init)==TRUE) {
-                     fid=file(fichier_init, open = "r")
-                     lignes <- readLines(fid)
-                     close(fid)} else {lignes=rep("",14)}
-                 }
-                 textInput(inputId ="chemin_rep_travail_histo","Chemin du répertoire de travail",value = lignes[2])})
-				
-				output$actu_fich_trace_histo <- renderUI({
-                 {
-                   fichier_init=paste(chem_mobitc,"\\Init_Routine_MobiTC.txt",sep="")
-                   if (file.exists(fichier_init)==TRUE) {
-                     fid=file(fichier_init, open = "r")
-                     lignes <- readLines(fid)
-                     close(fid)} else {lignes=rep("",14)}
-                 }
-                 textInput(inputId="fichier_trace_histo", "Nom du fichier des traces", value = lignes[10])}) 
-
-             })
-			 
-		observeEvent(input$histo,
-		{
-		chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Export_Histo.R",sep="")
-		source(chemsource)		
-		sortiehisto=MOBITC_Export_Histo(chem_mobitc,isolate(input$chemin_rep_travail_histo),isolate(input$fichier_trace_histo),isolate(input$fichier_evolution_hist$name),isolate(input$largeur_histo),isolate(input$longueur_histo),isolate(input$tronqu_histo),isolate(input$taux_histo))
-		output$texthisto<-renderText(sortiehisto[[1]])	
-    })
 
 
 observeEvent(input$quit,

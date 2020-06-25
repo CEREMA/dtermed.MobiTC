@@ -1,22 +1,22 @@
 #Chemin du repertoire de travail
-C:\WACA\Petite_Cote
+C:\R\R-3.6.1\Cerema\MOBITC\TUTO
 #Nom du projet
-WACA
+Tuto
 #Nom du fichier enveloppe
-
+20200623T105932-Tuto-Env-C010-T1000
 #Nom du fichier squelette
-
+20200623T105932-Tuto-Env-C010-T1000-Sque-C001_lierR
 #Nom du fichier trace
-
+20200623T105932-Tuto-Env-C010-T1000-Sque-C001_lierR_simpl-Tra-P100-L1000
 #Nom du fichier des intersections
-
+20200623T105932-Tuto-Env-C010-T1000-Sque-C001_lierR_simpl-Tra-P100-L1000-IntersTDC-v1.txt
 #Producteur des graphiques
-
+Cerema
 #Intervalles de confiance
-
+IC70
 #Date de début des graphiques
-
+1940
 #Date de fin des graphiques
-
+2030
 #Date de prospective
-
+2100
