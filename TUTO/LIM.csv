@@ -1,0 +1,26 @@
+ID	LIM	R	V	B
+1	-	0	0	0
+2	Talus pré-littoral	255	255	0
+3	Limite du jet de rive	255	0	0
+4	Limite supérieure du sable mouillée	0	255	0
+5	Dernière laisse de haute mer	0	0	255
+6	Crête de la berme	255	0	255
+7	Fond de plage	0	255	255
+8	Pied de dune	150	150	150
+9	Haut de falaise dunaire	255	102	0
+10	Crête de dune	128	0	128
+11	Limite côté mer de la végétation dunaire	128	0	0
+12	Limite côté mer de la végétation dunaire pérenne (arbres, arbustes,...)	255	153	204
+13	Limite de végétation (hors dune)	51	153	102
+14	Pied de falaise	204	153	255
+15	Haut de falaise	255	153	0
+16	Haut du cône d'éboulis	51	51	0
+17	Limite supérieure du schorre	0	0	128
+18	Limite supérieure de la slikke	192	192	192
+19	Cordon de galets	0	128	0
+20	Position de la 1ère barre d'avant-côte	128	128	0
+21	Position de la 2nde barre d'avant-côte	204	255	255
+22	Limite générée par MNT	0	51	102
+23	Limite du Domaine Public Maritime	51	51	153
+24	Limite parcellaire	51	51	51
+25	Autre	255	255	153
