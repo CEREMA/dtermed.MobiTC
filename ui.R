@@ -1,4 +1,10 @@
 # MOBITC
+
+###########################
+#reopen with encoding utf8#
+###########################
+options(encoding = "UTF-8")
+
 dirr=R.home()
 chem_mobitc=paste(dirr,"/Cerema/MOBITC",sep="")
 
@@ -11,39 +17,12 @@ chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Aide.R",sep="")
 source(chemsource)
 aide=MOBITC_Aide(chem_mobitc)
 
-texte_sque_coup=div(
-          p("Suite à un problème de mise à jour dans un package R la création de la ligne de base ne peut pas se faire entièrement dans R.
-                 Une solution temporaire a été trouvée en s'appuyant que Qgis"),
-          p("Commencer par actualiser le menu, le chemin du répertoire de travail et le nom du fichier enveloppe s'affichent."),
-          p("La squelettisation, c'est-à-dire la génération d'une ligne médiane à travers l'enveloppe, s'effectue dans MobiTC à partir du diagramme de Voronoï et de points :"),
-          p("- situés sur les nœuds du contour de l'enveloppe,"),
-          p("- et situés tous les zzz m (distance de coupure de l'enveloppe)."),
-          h3("Entrées :"),
-          h4("Distance de coupure de l'enveloppe"),
-          p("Cette distance est donnée en mètre. Sur de grandes étendues le calcul peut devenir un peu long si cette distance est trop faible."),
-          span(style="color:green","Valeur Tuto : 1"),
-          p("Après avoir appuyer sur Lancer, le fichier Points_env.shp se crée dans le répertoire de travail. Il faut suivre rigoureusement les étapes suivantes :"),
-          h3("Manipulations dans Qgis :"),
-          p("1 - ouvrir Qgis"),
-          p("2 - ouvrir le fichier Points_env.shp"),
-          p("3 - aller dans le menu Vecteur, puis Outils de géométrie, puis Polygones de Voronoi..."),
-          p("4 - dans la fenêtre Polygones de Voronoi, choisir comme couche d'entrée : Points_env, mettre 10 en Zone tampon, puis Exécuter. Le calcul peut être long. Quand le calcul est fini
-                les polygones s'affichent à l'écran."),
-          p("5 - aller dans le menu Vecteur, puis Outils de géométrie, puis Polygones vers lignes"),
-          p("6 - dans la fenêtre Polygones vers lignes, choisir comme couche d'entrée : Polygones de Voronoi, puis Exécuter. Quand le calcul est fini
-                les polylignes s'affichent à l'écran."),
-          p("7 - exporter la couche Lignes au format ESRI shapefile la renommant voronoi dans le répertoire de travail."),
-          p("Attention à la projection, celle-ci doit être identique aux traits de côte."),
-          p("Cette étape est finie, il convient de passer au menu Création du squelette de MobiTC.")
-)
-
-
 shinyUI(
 	fluidPage(
 		titlePanel(
 			fluidRow(
-		column(9, "MobiTC"), 
-		column(3, img(height = 48, width = 200, src = "logo_cerema_bd_cle554668.png", type="image/png"))
+		column(9, "MobiTC - Mobilité du Trait de Côte"), 
+		column(3, img(height = 60, width = 200, src = "Bloc-marque RF Cerema horizontal.jpg", type="image/jpg"))
 			)),
   navbarPage(title = "",#"MobiTC",
 ########### MENU ACCUEIL##########
@@ -164,8 +143,8 @@ shinyUI(
                         ),
                         mainPanel(
                           tabsetPanel(
-                            tabPanel("Aide", icon=icon("info-circle"),aide$aide_sque_coup),
-                            tabPanel("Résultats",icon=icon("map"),texte_sque_coup)
+                            tabPanel("Aide", icon=icon("info-circle"),aide$aide_sque_coup)
+                            #tabPanel("Résultats",icon=icon("map"),texte_sque_coup)
                           )
                         )
                ),# fin tabPanel(title="Coupure de l'enveloppe",         
@@ -179,7 +158,7 @@ shinyUI(
 					),
 				mainPanel(
 				  tabsetPanel(
-				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_sque),
+				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_sque_voro),
 				    tabPanel("Résultats",icon=icon("map"),textOutput("textsque"),leafletOutput("mapsque"))
 				    
 					)
@@ -206,31 +185,31 @@ shinyUI(
 			
 			tabPanel(title="Orientation du squelette",
 				headerPanel("Orientation des axes du squelette"),
-				sidebarPanel(
-					p("Reperez au prealable dans qgis les axes pas correctement orientés"),
-					fileInput(inputId="fichier_sque2", "Choisir le fichier du squelette", multiple = FALSE,accept="mif"),
-					textInput(inputId = "axesens",
-                        label = "Axes du squelette a changer de sens (par ex 1;3;7)",
-                        value = ""),
-					actionButton("squeorr", "Lancer")
-					),
+# 				sidebarPanel(
+# 					p("Reperez au prealable dans qgis les axes pas correctement orientés"),
+# 					fileInput(inputId="fichier_sque2", "Choisir le fichier du squelette", multiple = FALSE,accept="mif"),
+# 					textInput(inputId = "axesens",
+#                         label = "Axes du squelette a changer de sens (par ex 1;3;7)",
+#                         value = ""),
+# 					actionButton("squeorr", "Lancer")
+# 					),
 				mainPanel(
 				  tabsetPanel(
-				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_squeorr),
-				    tabPanel("Résultats",icon=icon("map"),textOutput("textsqueorr"),plotOutput("mapsqueorr"))
+				    tabPanel("Aide", icon=icon("info-circle"),aide$aide_squeorr)
+				    #tabPanel("Résultats",icon=icon("map"),textOutput("textsqueorr"),plotOutput("mapsqueorr"))
 				    
 					)
 				)
         ), # fin tabPanel(title="Orientation du squelette",
 			  tabPanel(title="Lissage du squelette",
 				headerPanel("Lissage du squelette"),
-				sidebarPanel(
-					actionButton("squelisse", "Lancer")
-					),
+				# sidebarPanel(
+				# 	actionButton("squelisse", "Lancer")
+				# 	),
 				mainPanel(
 				  tabsetPanel(
-				     tabPanel("Aide", icon=icon("info-circle"),aide$aide_squelisse),
-				    tabPanel("Résultats",icon=icon("map"),textOutput("textsquelisse"),plotOutput("mapsquelisse"))
+				     tabPanel("Aide", icon=icon("info-circle"),aide$aide_squelisse)#,
+				    #tabPanel("Résultats",icon=icon("map"),textOutput("textsquelisse"),plotOutput("mapsquelisse"))
 				   
 				  )
 				)
@@ -338,13 +317,17 @@ navbarMenu(title="Evolution",
              checkboxGroupInput(inputId="IC","Intervalles de confiance",c("IC 70%"="IC70","IC 90%"="IC90"), selected = NULL, inline = FALSE),
              numericInput(inputId = "datedebgraph",
                           label = "Date de debut des graphiques",
-                          value = 1940, min = 1800, max = 2200 , step=10),
+                          value = 1920, min = 1800, max = 2200 , step=10),
 			 numericInput(inputId = "datefingraph",
                           label = "Date de fin des graphiques",
                           value = 2040, min = 1800, max = 2200 , step=10),
-			 numericInput(inputId = "dateprosp",
-                          label = "Annee de l'extrapolation prospective",
-                          value = 2100, min = 2020, max = 2200 , step=10),
+			 numericInput(inputId = "dateprosp1",
+                          label = "Annee de l'extrapolation prospective 1",
+                          value = 2050, min = 2020, max = 2200 , step=10),
+			 numericInput(inputId = "dateprosp2",
+			              label = "Annee de l'extrapolation prospective 2",
+			              value = 2100, min = 2020, max = 2200 , step=10),
+			 textInput(inputId="datedebevol", "Date de césure", value = "1980;2000"),
              actionButton("evol", "Lancer")
 		),
 		mainPanel(
@@ -355,25 +338,7 @@ navbarMenu(title="Evolution",
 		  )
 		)
     )# fin tabPanel(title="Calcul évolution",
-
-# tabPanel(title="Graph évolution",
-#    headerPanel("Export des graphiques des évolutions"),
-#    sidebarPanel(
-#      uiOutput("actu_menu_graph"),
-#      uiOutput("actu_fich_travail_graph"),
-#      uiOutput("actu_fich_trace_graph"),
-#      uiOutput("actu_fich_intersection_graph"),
-#      fileInput(inputId="fichier_evolution_graph", "Choisir le fichier de l'évolution", multiple = FALSE,accept="txt"),
-#      actionButton("export_graphb", "Exporter les graphiques par trace")
-#    ),
-#    mainPanel(
-#      tabsetPanel(
-#        tabPanel("Résultats",icon=icon("table"),textOutput("textexportgraph")),
-#        tabPanel("Aide", icon=icon("info-circle"),aide$aide_graph)
-#    )
-#    )
-#   )# fin tabPanel(title="Graph évolution",
-),# fin navbar
+), # fin navbarMenu(title="Evolution",
 
 ##########MENU EXPORT SIG #############
 navbarMenu(title="Export SIG",
@@ -408,7 +373,29 @@ navbarMenu(title="Export SIG",
            ) # fin 	tabPanel(title="Histogrammes",
 ), # fin navbarMenu(title="Export SIG",
 
+##########"MENU Export Graph##########
+navbarMenu(title="Export Graphiques",
+tabPanel(title="Graph évolution WLS",
+   headerPanel("Export des graphiques des évolutions WLS"),
+   sidebarPanel(
+     uiOutput("actu_menu_graph_wls"),
+     uiOutput("actu_fich_travail_graph_wls"),
+     uiOutput("actu_fich_sque_graph_wls"),
+     uiOutput("actu_fich_trace_graph_wls"),
+     uiOutput("actu_fich_intersection_graph_wls"),
+     actionButton("export_graphb_wls", "Exporter les graphiques WLS par trace")
+   ),
+   mainPanel(
+     tabsetPanel(
+       tabPanel("Résultats",icon=icon("table"),textOutput("textexportgraph_wls")),
+       tabPanel("Aide", icon=icon("info-circle"),aide$aide_graph_wls)
+   )
+   )
+  )# fin tabPanel(title="Graph évolution",
+),# navbarMenu(title="Export Graphiques",
 
+
+##########"MENU Export Rapport html##########
   		tabPanel(title="Export Rapport html",
   		         headerPanel("Export de rapport sur l'évolution"),
   		         sidebarPanel(

@@ -1,13 +1,15 @@
 ###########################
 #reopen with encoding utf8#
 ###########################
+options(encoding = "UTF-8")
+
 if(!require(shiny)){install.packages("shiny")}
 library(shiny)
-if(!require(ggmap)){install.packages("ggmap")}
+#if(!require(ggmap)){install.packages("ggmap")}
 library(ggmap)
-if(!require(leaflet)){install.packages("leaflet")}
+#if(!require(leaflet)){install.packages("leaflet")}
 library(leaflet)
-if(!require(flexdashboard)){install.packages("flexdashboard")}
+#if(!require(flexdashboard)){install.packages("flexdashboard")}
 library(flexdashboard)
 
 shinyServer(function(input, output) {
@@ -33,7 +35,7 @@ shinyServer(function(input, output) {
 	output$actu_menu_env  <- renderUI({
 	  actionButton("actu_menu_env_but", "Actualiser le menu")
 	})
-	
+#mcx plus utilisé
 	observeEvent(input$voirF,
 	 {
 	  output$tabF<-renderTable({
@@ -77,8 +79,8 @@ shinyServer(function(input, output) {
 	                 close(fid)
 	                 chemin_rep_travail=lignes[2]
 	                 chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Limite.R",sep="")
-	                 #source(chemsource)
-	                 eval(parse(chemsource, encoding="UTF-8"))
+	                 source(chemsource)
+	                 #eval(parse(chemsource, encoding="UTF-8"))
 	                 sortieL=MOBITC_Limite(chemin_rep_travail)
 	                 sortieL[[1]]
 	               })
@@ -258,21 +260,21 @@ shinyServer(function(input, output) {
 		
 		})
 	
-	observeEvent(input$squeorr,
-		{
-		chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_SqueOrr.R",sep="")
-		source(chemsource)		
-		finsqueorr=MOBITC_SqueOrr(chem_mobitc,isolate(input$fichier_sque2),isolate(input$axesens))
-		output$textsqueorr<-renderText(finsqueorr)
-		})
+	# observeEvent(input$squeorr,
+	# 	{
+	# 	chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_SqueOrr.R",sep="")
+	# 	source(chemsource)		
+	# 	finsqueorr=MOBITC_SqueOrr(chem_mobitc,isolate(input$fichier_sque2),isolate(input$axesens))
+	# 	output$textsqueorr<-renderText(finsqueorr)
+	# 	})
 	
-	observeEvent(input$squelisse,
-		{
-		chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_SqueLisse.R",sep="")
-		source(chemsource)		
-		finsquelisse=MOBITC_SqueLisse(chem_mobitc)
-		output$textsquelisse<-renderText(finsquelisse)
-		})
+	# observeEvent(input$squelisse,
+	# 	{
+	# 	chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_SqueLisse.R",sep="")
+	# 	source(chemsource)		
+	# 	finsquelisse=MOBITC_SqueLisse(chem_mobitc)
+	# 	output$textsquelisse<-renderText(finsquelisse)
+	# 	})
 	
 	output$actu_menu_trace  <- renderUI({
 	  actionButton("actu_menu_trace_but", "Actualiser le menu")
@@ -461,14 +463,14 @@ shinyServer(function(input, output) {
 		output$tableip <- renderTable({sortieip[[2]]})
 		})
  
-observeEvent(input$intersurf,
-		{
-		chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_IntersectionSurf.R",sep="")
-		source(chemsource)		
-		finintersurf=MOBITC_IntersectionSurf(chem_mobitc,isolate(input$fichier_tracef2),isolate(input$fichier_tdc3))
-		output$textintersurf<-renderText(finintersurf)
-		}
-	)
+# observeEvent(input$intersurf,
+# 		{
+# 		chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_IntersectionSurf.R",sep="")
+# 		source(chemsource)		
+# 		finintersurf=MOBITC_IntersectionSurf(chem_mobitc,isolate(input$fichier_tracef2),isolate(input$fichier_tdc3))
+# 		output$textintersurf<-renderText(finintersurf)
+# 		}
+# 	)
 
 output$actu_menu_evol  <- renderUI({
   actionButton("actu_menu_evol_but", "Actualiser le menu")
@@ -511,18 +513,20 @@ observeEvent(input$evol,
 		{
 		chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Evolution.R",sep="")
 		source(chemsource)		
-		sortieevol=MOBITC_Evolution(chem_mobitc,isolate(input$chemin_rep_travail_evol),isolate(input$fichier_intersection_evol),isolate(input$produc),isolate(input$IC),isolate(input$datedebgraph),isolate(input$datefingraph),isolate(input$dateprosp))
+		sortieevol=MOBITC_Evolution(chem_mobitc,isolate(input$chemin_rep_travail_evol),isolate(input$fichier_intersection_evol),isolate(input$produc),isolate(input$IC),isolate(input$datedebgraph),isolate(input$datefingraph),isolate(input$dateprosp1),isolate(input$dateprosp2),isolate(input$datedebevol))
 		output$textevol<-renderText(sortieevol[[1]])
 		output$tableevol <- renderTable(sortieevol[[2]])	
     })
 
-output$actu_menu_graph  <- renderUI({
-  actionButton("actu_menu_graph_but", "Actualiser le menu")
+
+### export graph WLS
+output$actu_menu_graph_wls  <- renderUI({
+  actionButton("actu_menu_graph_wls_but", "Actualiser le menu")
 })
 
-observeEvent(input$actu_menu_graph_but,
+observeEvent(input$actu_menu_graph_wls_but,
              {
-               output$actu_fich_travail_graph <- renderUI({
+               output$actu_fich_travail_graph_wls <- renderUI({
                  {
                    fichier_init=paste(chem_mobitc,"\\Init_Routine_MobiTC.txt",sep="")
                    if (file.exists(fichier_init)==TRUE) {
@@ -530,9 +534,19 @@ observeEvent(input$actu_menu_graph_but,
                      lignes <- readLines(fid)
                      close(fid)} else {lignes=rep("",14)}
                  }
-                 textInput(inputId ="chemin_rep_travail_graph","Chemin du répertoire de travail",value = lignes[2])})
+                 textInput(inputId ="chemin_rep_travail_graph_wls","Chemin du répertoire de travail",value = lignes[2])})
+				 
+				 output$actu_fich_sque_graph_wls <- renderUI({
+	                 {
+	                   fichier_init=paste(chem_mobitc,"\\Init_Routine_MobiTC.txt",sep="")
+	                   if (file.exists(fichier_init)==TRUE) {
+	                     fid=file(fichier_init, open = "r")
+	                     lignes <- readLines(fid)
+	                     close(fid)} else {lignes=rep("",10)}
+	                 }
+	                 textInput(inputId="fichier_sque_graph_wls", "Nom du fichier du squelette (sans l'extension)", value = lignes[8])})
                
-               output$actu_fich_trace_graph <- renderUI({
+               output$actu_fich_trace_graph_wls <- renderUI({
                  {
                    fichier_init=paste(chem_mobitc,"\\Init_Routine_MobiTC.txt",sep="")
                    if (file.exists(fichier_init)==TRUE) {
@@ -540,9 +554,9 @@ observeEvent(input$actu_menu_graph_but,
                      lignes <- readLines(fid)
                      close(fid)} else {lignes=rep("",10)}
                  }
-                 textInput(inputId="fichier_trace_graph", "Nom du fichier des traces", value = lignes[10])}) 
+                 textInput(inputId="fichier_trace_graph_wls", "Nom du fichier des traces", value = lignes[10])}) 
                
-               output$actu_fich_intersection_graph <- renderUI({
+               output$actu_fich_intersection_graph_wls <- renderUI({
                  {
                    fichier_init=paste(chem_mobitc,"\\Init_Routine_MobiTC.txt",sep="")
                    if (file.exists(fichier_init)==TRUE) {
@@ -550,16 +564,17 @@ observeEvent(input$actu_menu_graph_but,
                      lignes <- readLines(fid)
                      close(fid)} else {lignes=rep("",10)}
                  }
-                 textInput(inputId="fichier_intersection_graph", "Nom du fichier des intersections", value = lignes[12])})
+                 textInput(inputId="fichier_intersection_graph_wls", "Nom du fichier des intersections", value = lignes[12])})
              })
 
-observeEvent(input$export_graphb,
+observeEvent(input$export_graphb_wls,
              {
-               chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_Export_Graph_2.R",sep="")
+               chemsource=paste(chem_mobitc,"/Sous_Routine_MOBITC/MOBITC_export_graph_WLS.R",sep="")
                source(chemsource)		
-               sortiegraph=MOBITC_Export_Graph_2(chem_mobitc,isolate(input$chemin_rep_travail_graph),isolate(input$fichier_trace_graph),isolate(input$fichier_intersection_graph),isolate(input$fichier_evolution_graph$name))
-               output$textexportgraph<-renderText(sortiegraph)
+               sortiegraph_wls=MOBITC_export_graph_WLS(chem_mobitc,isolate(input$chemin_rep_travail_graph_wls),isolate(input$fichier_sque_graph_wls),isolate(input$fichier_trace_graph_wls),isolate(input$fichier_intersection_graph_wls))
+               output$textexportgraph_wls<-renderText(sortiegraph_wls)
              })
+####
 
 observeEvent(input$actu_menu_histo_but,
              {
