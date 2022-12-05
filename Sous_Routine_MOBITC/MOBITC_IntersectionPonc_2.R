@@ -1,65 +1,6 @@
 #verif utf-8
-#version 18-12-2020
+#version 08-11-2022 #correction d'un bug sur tab5
 #réalisée par C Trmal Cerema
-
-# fichier_env="220190218T131915-nvx-Env-C010-T0250"
-# fichier_trace="20190218T131915-nvx-Env-C010-T0250-Sque-C010-Tra-P200-L0200-lisse-filtre9"
-# fichier_sque="20190218T131915-nvx-Env-C010-T0250-Sque-C010"
-# methodecoup="methodelarge"
-# methodelim="marqauto" #ou "marqmanu"
-# dirr=R.home()
-# chem_mobitc=paste(dirr,"/Cerema/MOBITC",sep="")
-# chemin_rep_travail="C:\\R\\R-3.5.1\\Cerema\\MOBITC\\TARAVO4"
-# NomTDCinit=rbind("tdc1_taravo.shp","tdc2_taravo.shp")
-
-# fichier_env="20180502T124233--Env-C010-T0250-Carnon"
-# fichier_trace="20180502T124233--Env-C010-T0250-Sque-C001liersimpl-Carnon-Tra-P200-L0200"
-# fichier_sque="20180502T124233--Env-C010-T0250-Sque-C001liersimpl-Carnon"
-# methodecoup="methodelarge"
-# methodelim="marqauto" #ou "marqmanu"
-# dirr=R.home()
-# chem_mobitc=paste(dirr,"/Cerema/MOBITC",sep="")
-# chemin_rep_travail = "C:\\Mobitc_WACA\\Petite_Cote"
-# NomTDCinit=rbind("tdc_ancien_petite_cote_brut_MobiTC","tdc_recent_petite_cote_brut_MobiTC")
-# fichier_env="20190726T112606-toto-Env-C010-T0250"
-# fichier_sque="20190719T140404--Env-C010-T0250-T-Sque-C005Net-D0055_lierR"
-# fichier_trace="20190719T140404--Env-C010-T0250-T-Sque-C005Net-D0055lier-Tra-P200-L0200"
-# chemin_rep_travail="C:\\R\\R-3.3.2\\Cerema\\MOBITC\\Rivages\\carnon"
-# NomTDCinit=rbind("N_traits_cote_naturels_recents_L_extrait2-Carnon.shp","Rivages_Segments_MobiTC_Retenus_extrait2-Carnon.shp")
-dirr=R.home()
-fichier_env=""
-chem_mobitc=paste(dirr,"/Cerema/MOBITC",sep="")
-chemin_rep_travail="C:\\0_ENCOURS\\MOBITC\\Prosp_test2"
-fichier_trace="sque_prosp2_snake-Tra-P50-L200"
-fichier_sque="sque_prosp2_snake"
-
-chemin_rep_travail="C:\\0_ENCOURS\\MOBITC\\DEPT83_sup50m_horsCAVEM"
-fichier_trace = "sque_Varsel_sup50-Tra-P50-L0200"
-fichier_sque ="sque_Varsel_sup50"
-NomTDCinit=rbind("TDC_2017_Dept83_CD83_MobiTC.shp",
-                 "TDC_1989_Dept83VxSalins_Cerege_MobiTC.shp",
-                 "TDC_1960_Dept83VxSalins_Cerege_MobiTC.shp",
-                 "TDC_1971_Dept83VxSalins_Cerege_MobiTC.shp",
-                 "TDC_1998_Dept83ScotTPM_BRGM_MobiTC.shp",
-                 "TDC_1972_Dept83ScotTPM_BRGM_MobiTC.shp",
-                 "TDC_1998_Dept83horsSCOT_CD83_MobiTC.shp",
-                 "TDC_1972_Dept83horsSCOT_CD83_MobiTC.shp",
-                 "TDC_bdortho20cmIGN_Dept83iles_Cerema_MobiTC.shp",
-                 "TDC_2014_Dept83_CD83_MobiTC.shp",
-                 "TDC_2008_Dept83horsSCOT_CD83_MobiTC.shp",
-                 "TDC_2003_Dept83horsVxSalins_CD83_MobiTC.shp",
-                 "TDC_2008_Dept83ScotTPM_BRGM_MobiTC.shp",
-                 "TDC_2003_Dept83VxSalins_Cerege_MobiTC.shp",
-                 "TDC_BdOrthoHist_Dept83_CRIGE_MobiTC.shp",
-                 "DGPS_R6_BRGM_PNPC_lines_2019_MobiTC.shp",
-                 "TDC_bdortho2008IGN_Dept83iles_Cerema_MobiTC.shp",
-                 "TDC_bdortho2014IGN_Dept83iles_Cerema_MobiTC.shp",
-                 "TDC_bdortho2003IGN_Dept83iles_Cerema_MobiTC.shp",
-                 "N_traits_cote_naturels_anciens_fr_epsg2154_L_med_MobiTC.shp",
-                 "N_traits_cote_naturels_recents_fr_epsg2154_L_med_MobiTC.shp"
-)
-methodecoup="methodelarge"
-methodelim="marqauto"
 
 MOBITC_IntersectionPonc_2<-function(chem_mobitc,chemin_rep_travail,fichier_env,fichier_sque,fichier_trace,NomTDCinit,methodecoup,methodelim)
 {
@@ -304,7 +245,7 @@ MOBITC_IntersectionPonc_2<-function(chem_mobitc,chemin_rep_travail,fichier_env,f
       {
       extraittab=tab5[which(tab5$NAxe == as.numeric(Trace[itr,1]@data) & tab5$NTrace == as.numeric(Trace[itr,2]@data)), ]
       } else {
-        extraittab=tab5[which(tab5$NAxe == as.numeric(Trace[itr,1]@data) & tab5$NTrace == as.numeric(Trace[itr,2]@data)) & tab5$Loc == as.character(Trace[itr,3]@data) , ]
+        extraittab=tab5[which(tab5$NAxe == as.numeric(Trace[itr,1]@data) & tab5$NTrace == as.numeric(Trace[itr,2]@data) & tab5$Loc == as.character(Trace[itr,3]@data)) , ]
         
       }
       nblim=length(unique(extraittab$marqueur))
@@ -365,14 +306,14 @@ MOBITC_IntersectionPonc_2<-function(chem_mobitc,chemin_rep_travail,fichier_env,f
       {
         extraittab=tab5[which(tab5$NAxe == as.numeric(Trace[itr,1]@data) & tab5$NTrace == as.numeric(Trace[itr,2]@data)), ]
       } else {
-        extraittab=tab5[which(tab5$NAxe == as.numeric(Trace[itr,1]@data) & tab5$NTrace == as.numeric(Trace[itr,2]@data)) & tab5$Loc == as.character(Trace[itr,3]@data) , ]
+        extraittab=tab5[which(tab5$NAxe == as.numeric(Trace[itr,1]@data) & tab5$NTrace == as.numeric(Trace[itr,2]@data) & tab5$Loc == as.character(Trace[itr,3]@data)) , ]
         
       }
       nblim=length(unique(extraittab$marqueur))
       if (nblim>1)
       {	
         lim=as.data.frame(table(extraittab$marqueur)) 
-        Monchoix=lim$Var1[ which.max(lim$Freq)]
+        Monchoix=lim$Var1[which.max(lim$Freq)]
         if (Loc==0)
         {
           todel=which(tab5$NAxe == as.numeric(Trace[itr,1]@data) & tab5$NTrace == as.numeric(Trace[itr,2]@data) & tab5$marqueur != Monchoix)
